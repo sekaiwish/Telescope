@@ -70,20 +70,32 @@ async def next(rx):
     await rx.send(embed=embed)
 
 @bot.command()
-async def nextwildy(rx):
-    i = 0
-    while True:
-        if stars[i]['minTime'] < int(time.time()):
-            i += 1; continue
-        if stars[i]['location'] != 13:
-            i += 1; continue
-        break
-    next_time = str(datetime.timedelta(seconds=stars[i]['minTime'] - int(time.time()))) + ' ~ ' + str(datetime.timedelta(seconds=stars[i]['maxTime'] - int(time.time())))
-    embed=discord.Embed(title='The next wildy star to land is...', color=0x6a001a);
-    embed.set_thumbnail(url='https://oldschool.runescape.wiki/images/a/a1/Skull_(status)_icon.png')
-    embed.add_field(name='World', value=f"{stars[i]['world']}", inline=True)
-    embed.add_field(name='ETA', value=f"{next_time}", inline=False)
-    await rx.send(embed=embed)
+async def nextwildy(rx, limit=1):
+    if limit > 20: limit = 20
+    next_stars = []
+    for star in stars:
+        if star['minTime'] < int(time.time()):
+            continue
+        if star['location'] != 13:
+            continue
+        next_stars.append(star)
+        if len(next_stars) == limit:
+            break
+    if len(next_stars) > 1:
+        next_time = str(datetime.timedelta(seconds=next_stars[0]['minTime'] - int(time.time()))) + ' ~ ' + str(datetime.timedelta(seconds=next_stars[0]['maxTime'] - int(time.time())))
+        embed=discord.Embed(title=f'The next {len(next_stars)} wildy stars to land are...', color=0x6a001a);
+        embed.set_thumbnail(url='https://oldschool.runescape.wiki/images/a/a1/Skull_(status)_icon.png')
+        for star in next_stars:
+            star_time = str(datetime.timedelta(seconds=star['minTime'] - int(time.time()))) + ' ~ ' + str(datetime.timedelta(seconds=star['maxTime'] - int(time.time())))
+            embed.add_field(name=f"W{star['world']}", value=f"{star_time}", inline=True)
+        await rx.send(embed=embed)
+    else:
+        next_time = str(datetime.timedelta(seconds=next_stars[0]['minTime'] - int(time.time()))) + ' ~ ' + str(datetime.timedelta(seconds=next_stars[0]['maxTime'] - int(time.time())))
+        embed=discord.Embed(title='The next wildy star to land is...', color=0x6a001a);
+        embed.set_thumbnail(url='https://oldschool.runescape.wiki/images/a/a1/Skull_(status)_icon.png')
+        embed.add_field(name='World', value=f"{next_stars[0]['world']}", inline=True)
+        embed.add_field(name='ETA', value=f"{next_time}", inline=False)
+        await rx.send(embed=embed)
 
 @bot.event
 async def on_ready():
