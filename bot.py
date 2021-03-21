@@ -71,7 +71,7 @@ async def next(rx):
 
 @bot.command()
 async def nextwildy(rx, limit=1):
-    if limit > 20: limit = 20
+    if limit > 18: limit = 18
     next_stars = []
     for star in stars:
         if star['minTime'] < int(time.time()):
@@ -82,7 +82,6 @@ async def nextwildy(rx, limit=1):
         if len(next_stars) == limit:
             break
     if len(next_stars) > 1:
-        next_time = str(datetime.timedelta(seconds=next_stars[0]['minTime'] - int(time.time()))) + ' ~ ' + str(datetime.timedelta(seconds=next_stars[0]['maxTime'] - int(time.time())))
         embed=discord.Embed(title=f'The next {len(next_stars)} wildy stars to land are...', color=0x6a001a);
         embed.set_thumbnail(url='https://oldschool.runescape.wiki/images/a/a1/Skull_(status)_icon.png')
         for star in next_stars:
