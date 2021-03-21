@@ -94,8 +94,9 @@ async def next(rx):
     next_star = None
     for star in stars:
         if star['minTime'] < int(time.time()):
-            next_star = star
-            break
+            continue
+        next_star = star
+        break
     next_time = str(datetime.timedelta(seconds=next_star['minTime'] - int(time.time()))) + ' ~ ' + str(datetime.timedelta(seconds=next_star['maxTime'] - int(time.time())))
     embed=discord.Embed(title='The next star to land is...', color=0x6a001a);
     embed.set_thumbnail(url='https://oldschool.runescape.wiki/images/7/7c/Infernal_pickaxe.png')
