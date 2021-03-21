@@ -91,16 +91,16 @@ def get_world(world):
 
 @bot.command()
 async def next(rx):
-    i = 0
-    while True:
-        if stars[i]['minTime'] < int(time.time()):
-            i += 1; continue
-        break
-    next_time = str(datetime.timedelta(seconds=stars[i]['minTime'] - int(time.time()))) + ' ~ ' + str(datetime.timedelta(seconds=stars[i]['maxTime'] - int(time.time())))
+    next_star = None
+    for star in stars:
+        if star['minTime'] < int(time.time()):
+            next_star = star
+            break
+    next_time = str(datetime.timedelta(seconds=next_star['minTime'] - int(time.time()))) + ' ~ ' + str(datetime.timedelta(seconds=next_star['maxTime'] - int(time.time())))
     embed=discord.Embed(title='The next star to land is...', color=0x6a001a);
     embed.set_thumbnail(url='https://oldschool.runescape.wiki/images/7/7c/Infernal_pickaxe.png')
-    embed.add_field(name='World', value=f"{stars[i]['world']}", inline=True)
-    embed.add_field(name='Location', value=f"{locations[stars[i]['location']]}", inline=True)
+    embed.add_field(name='World', value=f"{next_star['world']}", inline=True)
+    embed.add_field(name='Location', value=f"{locations[next_star['location']]}", inline=True)
     embed.add_field(name='ETA', value=f"{next_time}", inline=False)
     await rx.send(embed=embed)
 
