@@ -100,7 +100,8 @@ async def next(rx):
     next_time = str(datetime.timedelta(seconds=next_star['minTime'] - int(time.time()))) + ' ~ ' + str(datetime.timedelta(seconds=next_star['maxTime'] - int(time.time())))
     embed=discord.Embed(title='The next star to land is...', color=0x6a001a);
     embed.set_thumbnail(url='https://oldschool.runescape.wiki/images/7/7c/Infernal_pickaxe.png')
-    embed.add_field(name='World', value=f"{next_star['world']}", inline=True)
+    world = get_world(next_star['world'])
+    embed.add_field(name='World', value=f"{world}", inline=True)
     embed.add_field(name='Location', value=f"{locations[next_star['location']]}", inline=True)
     embed.add_field(name='ETA', value=f"{next_time}", inline=False)
     await rx.send(embed=embed)
@@ -122,14 +123,16 @@ async def nextwildy(rx, limit=1):
         embed.set_thumbnail(url='https://oldschool.runescape.wiki/images/a/a1/Skull_(status)_icon.png')
         for star in next_stars:
             star_time = str(datetime.timedelta(seconds=star['minTime'] - int(time.time()))) + ' ~ ' + str(datetime.timedelta(seconds=star['maxTime'] - int(time.time())))
-            embed.add_field(name=f"W{star['world']}", value=f"{star_time}", inline=True)
+            world = get_world(star['world'])
+            embed.add_field(name=f"W{world}", value=f"{star_time}", inline=True)
         await rx.send(embed=embed)
     else:
         next_time = str(datetime.timedelta(seconds=next_stars[0]['minTime'] - int(time.time()))) + ' ~ ' + str(datetime.timedelta(seconds=next_stars[0]['maxTime'] - int(time.time())))
         embed=discord.Embed(title='The next wildy star to land is...', color=0x6a001a);
         embed.set_thumbnail(url='https://oldschool.runescape.wiki/images/a/a1/Skull_(status)_icon.png')
-        embed.add_field(name='World', value=f"{next_stars[0]['world']}", inline=True)
-        embed.add_field(name='ETA', value=f"{next_time}", inline=False)
+        world = get_world(next_stars[0]['world'])
+        embed.add_field(name='World', value=f'{world}', inline=True)
+        embed.add_field(name='ETA', value=f'{next_time}', inline=False)
         await rx.send(embed=embed)
 
 @bot.event
