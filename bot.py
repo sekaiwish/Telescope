@@ -49,7 +49,6 @@ with open('token', 'r+') as fp:
 async def get_stars():
     global stars
     while True:
-        print('Stars updated')
         r = requests.get('https://sek.ai/stars/get.php')
         stars = r.json()
         await asyncio.sleep(10)
