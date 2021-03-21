@@ -54,6 +54,41 @@ async def get_stars():
         stars = r.json()
         await asyncio.sleep(10)
 
+def get_world(world):
+    worlds = {
+        324: 'PVP',
+        325: 'PVP',
+        337: 'PVP',
+        349: 'TL2000',
+        353: 'TL1250',
+        361: 'TL2000',
+        364: 'TL1250',
+        365: 'HR',
+        366: 'TL1500',
+        373: 'TL1750',
+        391: 'TL1750',
+        392: 'PVP',
+        396: 'TL2000',
+        415: 'TL2200',
+        416: 'TL1500',
+        420: 'TL1500',
+        428: 'TL2000',
+        429: 'TL1250',
+        447: 'TL1250',
+        448: 'TL1500',
+        449: 'TL1750',
+        450: 'TL2200',
+        467: 'TL1750',
+        526: 'TL2200',
+        527: 'TL2000',
+        528: 'TL1500',
+        529: 'TL1250',
+        533: 'HR'
+    }
+    if world in worlds:
+        world = f'{world} ({worlds[world]})'
+    return world
+
 @bot.command()
 async def next(rx):
     i = 0
