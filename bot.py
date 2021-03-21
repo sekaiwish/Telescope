@@ -46,12 +46,6 @@ with open('token', 'r+') as fp:
         fp.seek(0); token = fp.read()
         print('Using existing token')
 
-@bot.event
-async def on_ready():
-    print(f"I am running on {bot.user.name} with the ID {bot.user.id}")
-    await get_stars()
-    await bot.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name="stars."))
-
 async def get_stars():
     global stars
     while True:
@@ -90,5 +84,11 @@ async def nextwildy(rx):
     embed.add_field(name='World', value=f"{stars[i]['world']}", inline=True)
     embed.add_field(name='ETA', value=f"{next_time}", inline=False)
     await rx.send(embed=embed)
+
+@bot.event
+async def on_ready():
+    print(f'Logged into {bot.user.name}#{bot.user.discriminator} ({bot.user.id})')
+    await get_stars()
+    await bot.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name='stars.'))
 
 bot.run(token)
