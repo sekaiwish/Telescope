@@ -3,6 +3,7 @@ import os, time, random, datetime, json, asyncio, pickle, requests, discord
 from discord.ext import commands
 
 stars = None
+last_message = None
 locations = {
     0: 'Asgarnia',
     1: 'Karamja/Crandor',
@@ -91,13 +92,13 @@ def get_world(world):
 
 @bot.command()
 async def next(rx):
+    global last_message
     await rx.message.delete()
+    if last_message: await last_message.delete()
     next_star = None
     for star in stars:
-        if star['minTime'] < int(time.time()):
-            continue
-        next_star = star
-        break
+        if star['minTime'] < int(time.time()): continue
+        next_star = star; break
     next_time = str(datetime.timedelta(seconds=next_star['minTime'] - int(time.time()))) + ' ~ ' + str(datetime.timedelta(seconds=next_star['maxTime'] - int(time.time())))
     embed=discord.Embed(title='The next star to land is...', color=0x6a001a);
     embed.set_thumbnail(url='https://oldschool.runescape.wiki/images/7/7c/Infernal_pickaxe.png')
@@ -105,7 +106,7 @@ async def next(rx):
     embed.add_field(name='World', value=f"{world}", inline=True)
     embed.add_field(name='Location', value=f"{locations[next_star['location']]}", inline=True)
     embed.add_field(name='ETA', value=f"{next_time}", inline=False)
-    await rx.send(embed=embed, delete_after=30)
+    last_message = await rx.send(embed=embed)
 
 @bot.command()
 async def nextwildy(rx, limit=1):
