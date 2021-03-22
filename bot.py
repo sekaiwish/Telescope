@@ -97,7 +97,9 @@ async def scout(rx):
 async def next(rx):
     global last_message
     await rx.message.delete()
-    if last_message: await last_message.delete()
+    if last_message:
+        try: await last_message.delete()
+        except discord.errors.NotFound: pass
     next_star = None
     for star in stars:
         if star['minTime'] < int(time.time()): continue
