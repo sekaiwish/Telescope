@@ -77,6 +77,7 @@ def get_world(world):
 @bot.command()
 async def scout(rx):
     g1, g2, g3, g4, g5 = [], [], [], [], []
+    all = 'All scouted!'
     for star in stars:
         if star['maxTime'] < int(time.time()):
             if star['world'] < 336: g1.append(star['world'])
@@ -86,11 +87,11 @@ async def scout(rx):
             else: g5.append(star['world'])
     embed=discord.Embed(title='List of unscouted worlds', color=0x6a001a);
     embed.set_thumbnail(url='https://oldschool.runescape.wiki/images/5/5d/Mahogany_telescope_icon.png')
-    embed.add_field(name='Group 1 (302-334)', value=f"{', '.join(get_world(w) for w in sorted(g1))}", inline=True)
-    embed.add_field(name='Group 2 (336-370)', value=f"{', '.join(get_world(w) for w in sorted(g2))}", inline=True)
-    embed.add_field(name='Group 3 (373-450)', value=f"{', '.join(get_world(w) for w in sorted(g3))}", inline=True)
-    embed.add_field(name='Group 4 (463-496)', value=f"{', '.join(get_world(w) for w in sorted(g4))}", inline=True)
-    embed.add_field(name='Group 5 (505-535)', value=f"{', '.join(get_world(w) for w in sorted(g5))}", inline=True)
+    embed.add_field(name='Group 1 (302-334)', value=f"{', '.join(get_world(w) for w in sorted(g1)) if g1 else all}", inline=True)
+    embed.add_field(name='Group 2 (336-370)', value=f"{', '.join(get_world(w) for w in sorted(g2)) if g2 else all}", inline=True)
+    embed.add_field(name='Group 3 (373-450)', value=f"{', '.join(get_world(w) for w in sorted(g3)) if g3 else all}", inline=True)
+    embed.add_field(name='Group 4 (463-496)', value=f"{', '.join(get_world(w) for w in sorted(g4)) if g4 else all}", inline=True)
+    embed.add_field(name='Group 5 (505-535)', value=f"{', '.join(get_world(w) for w in sorted(g5)) if g5 else all}", inline=True)
     await rx.send(embed=embed)
 
 @bot.command()
