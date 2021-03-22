@@ -90,6 +90,7 @@ def get_world(world):
 
 @bot.command()
 async def next(rx):
+    await rx.message.delete()
     next_star = None
     for star in stars:
         if star['minTime'] < int(time.time()):
@@ -103,7 +104,7 @@ async def next(rx):
     embed.add_field(name='World', value=f"{world}", inline=True)
     embed.add_field(name='Location', value=f"{locations[next_star['location']]}", inline=True)
     embed.add_field(name='ETA', value=f"{next_time}", inline=False)
-    await rx.send(embed=embed)
+    await rx.send(embed=embed, delete_after=30)
 
 @bot.command()
 async def nextwildy(rx, limit=1):
