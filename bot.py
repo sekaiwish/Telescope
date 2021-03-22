@@ -79,19 +79,18 @@ async def scout(rx):
     g1, g2, g3, g4, g5 = [], [], [], [], []
     for star in stars:
         if star['maxTime'] < int(time.time()):
-            world = get_world(star['world'])
-            if star['world'] < 336: g1.append(get_world(star['world']))
-            elif star['world'] < 373: g2.append(get_world(star['world']))
-            elif star['world'] < 463: g3.append(get_world(star['world']))
-            elif star['world'] < 505: g4.append(get_world(star['world']))
-            else: g5.append(get_world(star['world']))
+            if star['world'] < 336: g1.append(star['world'])
+            elif star['world'] < 373: g2.append(star['world'])
+            elif star['world'] < 463: g3.append(star['world'])
+            elif star['world'] < 505: g4.append(star['world'])
+            else: g5.append(star['world'])
     embed=discord.Embed(title='List of unscouted worlds', color=0x6a001a);
     embed.set_thumbnail(url='https://oldschool.runescape.wiki/images/5/5d/Mahogany_telescope_icon.png')
-    embed.add_field(name='Group 1 (302-334)', value=f"{', '.join(g1)}", inline=True)
-    embed.add_field(name='Group 2 (336-370)', value=f"{', '.join(g2)}", inline=True)
-    embed.add_field(name='Group 3 (373-450)', value=f"{', '.join(g3)}", inline=True)
-    embed.add_field(name='Group 4 (463-496)', value=f"{', '.join(g4)}", inline=True)
-    embed.add_field(name='Group 5 (505-535)', value=f"{', '.join(g5)}", inline=True)
+    embed.add_field(name='Group 1 (302-334)', value=f"{', '.join(get_world(w) for w in sorted(g1))}", inline=True)
+    embed.add_field(name='Group 2 (336-370)', value=f"{', '.join(get_world(w) for w in sorted(g2))}", inline=True)
+    embed.add_field(name='Group 3 (373-450)', value=f"{', '.join(get_world(w) for w in sorted(g3))}", inline=True)
+    embed.add_field(name='Group 4 (463-496)', value=f"{', '.join(get_world(w) for w in sorted(g4))}", inline=True)
+    embed.add_field(name='Group 5 (505-535)', value=f"{', '.join(get_world(w) for w in sorted(g5))}", inline=True)
     await rx.send(embed=embed)
 
 @bot.command()
