@@ -128,7 +128,7 @@ async def get_stars():
 @bot.event
 async def on_ready():
     print(f'Logged into {bot.user.name}#{bot.user.discriminator} ({bot.user.id})')
-    await get_stars()
     await bot.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name='stars.'))
+    await get_stars()
 
 bot.run(token)
