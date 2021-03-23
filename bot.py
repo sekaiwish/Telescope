@@ -3,7 +3,7 @@ import os, time, datetime, json, asyncio, requests, discord
 from discord.ext import commands
 
 stars = None
-last_message = None
+last_message = {}
 locations = {
     0: 'Asgarnia',
     1: 'Karamja/Crandor',
@@ -98,8 +98,8 @@ async def scout(rx):
 async def next(rx):
     global last_message
     await rx.message.delete()
-    if last_message:
-        try: await last_message.delete()
+    if rx.guild.id in last_message:
+        try: await last_message[rx.guild.id].delete()
         except discord.errors.NotFound: pass
     next_star = None
     for star in stars:
@@ -112,7 +112,7 @@ async def next(rx):
     embed.add_field(name='World', value=f"{world}", inline=True)
     embed.add_field(name='Location', value=f"{locations[next_star['location']]}", inline=True)
     embed.add_field(name='ETA', value=f"{next_time}", inline=False)
-    last_message = await rx.send(embed=embed)
+    last_message[rx.guild.id] = await rx.send(embed=embed)
 
 @bot.command()
 async def nextwildy(rx, limit=1):
