@@ -97,7 +97,7 @@ async def scout(rx):
     i = 0
     for group in groups:
         i += 1
-        embed.add_field(name=f'{group_name[i]}', value=f"{', '.join(get_world(w) for w in group) if group else all}", inline=True)
+        embed.add_field(name=group_name[i], value=f"{', '.join(get_world(w) for w in group) if group else all}", inline=True)
     await rx.send(embed=embed)
 
 @bot.command()
@@ -115,9 +115,9 @@ async def next(rx):
     embed=discord.Embed(title='The next star to land is...', color=0x6a001a);
     embed.set_thumbnail(url='https://oldschool.runescape.wiki/images/7/7c/Infernal_pickaxe.png')
     world = get_world(next_star['world'])
-    embed.add_field(name='World', value=f"{world}", inline=True)
-    embed.add_field(name='Location', value=f"{locations[next_star['location']]}", inline=True)
-    embed.add_field(name='ETA', value=f"{next_time}", inline=False)
+    embed.add_field(name='World', value=world, inline=True)
+    embed.add_field(name='Location', value=locations[next_star['location']], inline=True)
+    embed.add_field(name='ETA', value=next_time, inline=False)
     last_message[rx.guild.id] = await rx.send(embed=embed)
 
 @bot.command()
@@ -135,15 +135,15 @@ async def nextwildy(rx, limit=1):
         for star in next_stars:
             star_time = str(datetime.timedelta(seconds=star['minTime'] - int(time.time()))) + ' ~ ' + str(datetime.timedelta(seconds=star['maxTime'] - int(time.time())))
             world = get_world(star['world'])
-            embed.add_field(name=f"W{world}", value=f"{star_time}", inline=True)
+            embed.add_field(name=f"W{world}", value=star_time, inline=True)
         await rx.send(embed=embed)
     else:
         next_time = str(datetime.timedelta(seconds=next_stars[0]['minTime'] - int(time.time()))) + ' ~ ' + str(datetime.timedelta(seconds=next_stars[0]['maxTime'] - int(time.time())))
         embed=discord.Embed(title='The next wildy star to land is...', color=0x6a001a);
         embed.set_thumbnail(url='https://oldschool.runescape.wiki/images/a/a1/Skull_(status)_icon.png')
         world = get_world(next_stars[0]['world'])
-        embed.add_field(name='World', value=f'{world}', inline=True)
-        embed.add_field(name='ETA', value=f'{next_time}', inline=False)
+        embed.add_field(name='World', value=world, inline=True)
+        embed.add_field(name='ETA', value=next_time, inline=False)
         await rx.send(embed=embed)
 
 async def get_stars():
