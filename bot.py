@@ -143,7 +143,7 @@ async def nextwildy(rx, limit=1):
 async def get_stars():
     global stars
     while True:
-        r = requests.get('https://sek.ai/stars/get.php?p=36000')
+        r = requests.get('https://sek.ai/stars/get.php?p=all')
         stars = r.json()
         await asyncio.sleep(10)
 
