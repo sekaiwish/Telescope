@@ -51,6 +51,13 @@ worlds = {
     529: 'TL1250',
     533: 'HR'
 }
+group_name = {
+    1: 'Group 1 (302-334)',
+    2: 'Group 2 (336-370)',
+    3: 'Group 3 (373-450)',
+    4: 'Group 4 (463-496)',
+    5: 'Group 5 (505-535)'
+}
 owner = 119094696487288833
 intents = discord.Intents.none()
 intents.guilds = True; intents.guild_messages = True
@@ -76,22 +83,21 @@ def get_world(world):
 
 @bot.command()
 async def scout(rx):
-    g1, g2, g3, g4, g5 = [], [], [], [], []
+    groups = [[] for _ in range(5)]
     all = 'All scouted!'
-    for star in stars:
+    for star in sorted(stars, key=lambda k: k['world']):
         if star['maxTime'] < int(time.time()):
-            if star['world'] < 336: g1.append(star['world'])
-            elif star['world'] < 373: g2.append(star['world'])
-            elif star['world'] < 463: g3.append(star['world'])
-            elif star['world'] < 505: g4.append(star['world'])
-            else: g5.append(star['world'])
+            if star['world'] < 336: groups[0].append(star['world'])
+            elif star['world'] < 373: groups[1].append(star['world'])
+            elif star['world'] < 463: groups[2].append(star['world'])
+            elif star['world'] < 505: groups[3].append(star['world'])
+            else: groups[4].append(star['world'])
     embed=discord.Embed(title='List of unscouted worlds', color=0x6a001a);
     embed.set_thumbnail(url='https://oldschool.runescape.wiki/images/5/5d/Mahogany_telescope_icon.png')
-    embed.add_field(name='Group 1 (302-334)', value=f"{', '.join(get_world(w) for w in sorted(g1)) if g1 else all}", inline=True)
-    embed.add_field(name='Group 2 (336-370)', value=f"{', '.join(get_world(w) for w in sorted(g2)) if g2 else all}", inline=True)
-    embed.add_field(name='Group 3 (373-450)', value=f"{', '.join(get_world(w) for w in sorted(g3)) if g3 else all}", inline=True)
-    embed.add_field(name='Group 4 (463-496)', value=f"{', '.join(get_world(w) for w in sorted(g4)) if g4 else all}", inline=True)
-    embed.add_field(name='Group 5 (505-535)', value=f"{', '.join(get_world(w) for w in sorted(g5)) if g5 else all}", inline=True)
+    i = 0
+    for group in groups:
+        i += 1
+        embed.add_field(name=f'{group_name[i]}', value=f"{', '.join(get_world(w) for w in group) if group else all}", inline=True)
     await rx.send(embed=embed)
 
 @bot.command()
