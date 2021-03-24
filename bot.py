@@ -100,23 +100,32 @@ async def scout(rx):
     await rx.send(embed=embed)
 
 @bot.command()
-async def next(rx):
+async def next(rx, limit=1):
+    if limit > 3: limit = 3
     global last_message
     await rx.message.delete()
     if rx.guild.id in last_message:
         try: await last_message[rx.guild.id].delete()
         except discord.errors.NotFound: pass
-    next_star = None
+    next_stars = []
     for star in stars:
         if star['minTime'] < int(time.time()): continue
-        next_star = star; break
-    next_time = str(datetime.timedelta(seconds=next_star['minTime'] - int(time.time()))) + ' ~ ' + str(datetime.timedelta(seconds=next_star['maxTime'] - int(time.time())))
-    embed=discord.Embed(title='The next star to land is...', color=0x6a001a);
+        next_stars.append(star)
+        if len(next_stars) == limit: break
+    if len(next_stars) > 1:
+        embed=discord.Embed(title=f'The next {len(next_stars)} stars to land are...', color=0x6a001a);
+        for star in next_stars:
+            star_time = str(datetime.timedelta(seconds=star['minTime'] - int(time.time()))) + ' ~ ' + str(datetime.timedelta(seconds=star['maxTime'] - int(time.time())))
+            world = get_world(star['world'])
+            embed.add_field(name=f"W{world} - {locations[star['location']]}", value=star_time, inline=True)
+    else:
+        next_time = str(datetime.timedelta(seconds=next_stars[0]['minTime'] - int(time.time()))) + ' ~ ' + str(datetime.timedelta(seconds=next_stars[0]['maxTime'] - int(time.time())))
+        embed=discord.Embed(title='The next star to land is...', color=0x6a001a);
+        world = get_world(next_stars[0]['world'])
+        embed.add_field(name='World', value=world, inline=True)
+        embed.add_field(name='Location', value=locations[next_stars[0]['location']], inline=True)
+        embed.add_field(name='ETA', value=next_time, inline=False)
     embed.set_thumbnail(url='https://oldschool.runescape.wiki/images/7/7c/Infernal_pickaxe.png')
-    world = get_world(next_star['world'])
-    embed.add_field(name='World', value=world, inline=True)
-    embed.add_field(name='Location', value=locations[next_star['location']], inline=True)
-    embed.add_field(name='ETA', value=next_time, inline=False)
     last_message[rx.guild.id] = await rx.send(embed=embed)
 
 @bot.command()
@@ -130,20 +139,18 @@ async def nextwildy(rx, limit=1):
         if len(next_stars) == limit: break
     if len(next_stars) > 1:
         embed=discord.Embed(title=f'The next {len(next_stars)} wildy stars to land are...', color=0x6a001a);
-        embed.set_thumbnail(url='https://oldschool.runescape.wiki/images/a/a1/Skull_(status)_icon.png')
         for star in next_stars:
             star_time = str(datetime.timedelta(seconds=star['minTime'] - int(time.time()))) + ' ~ ' + str(datetime.timedelta(seconds=star['maxTime'] - int(time.time())))
             world = get_world(star['world'])
-            embed.add_field(name=f"W{world}", value=star_time, inline=True)
-        await rx.send(embed=embed)
+            embed.add_field(name=f'W{world}', value=star_time, inline=True)
     else:
         next_time = str(datetime.timedelta(seconds=next_stars[0]['minTime'] - int(time.time()))) + ' ~ ' + str(datetime.timedelta(seconds=next_stars[0]['maxTime'] - int(time.time())))
         embed=discord.Embed(title='The next wildy star to land is...', color=0x6a001a);
-        embed.set_thumbnail(url='https://oldschool.runescape.wiki/images/a/a1/Skull_(status)_icon.png')
         world = get_world(next_stars[0]['world'])
         embed.add_field(name='World', value=world, inline=True)
         embed.add_field(name='ETA', value=next_time, inline=False)
-        await rx.send(embed=embed)
+    embed.set_thumbnail(url='https://oldschool.runescape.wiki/images/a/a1/Skull_(status)_icon.png')
+    await rx.send(embed=embed)
 
 async def get_stars():
     global stars
