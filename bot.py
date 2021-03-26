@@ -156,7 +156,10 @@ async def get_stars():
     global stars
     while True:
         r = requests.get('https://sek.ai/stars/get.php?p=all')
-        stars = r.json()
+        try:
+            stars = r.json()
+        except json.decoder.JSONDecodeError:
+            stars = []
         await asyncio.sleep(10)
 
 @bot.event
