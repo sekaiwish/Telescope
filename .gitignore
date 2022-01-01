@@ -1,2 +1,3 @@
-token
-data
+__pycache__
+.token
+.auth_keys

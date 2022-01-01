@@ -60,7 +60,7 @@ group_name = {
 }
 owner = 119094696487288833
 intents = discord.Intents.none()
-intents.guilds = True; intents.guild_messages = True
+intents.guild_messages = True
 bot = commands.Bot(command_prefix='.', owner_id=owner, intents=intents)
 
 def setup_files(*files):
@@ -68,8 +68,8 @@ def setup_files(*files):
         if not os.path.isfile(file):
             if os.path.exists(file): raise Exception('Require file exists as dir')
             f = open(file, 'x')
-setup_files('token')
-with open('token', 'r+') as fp:
+setup_files('.token')
+with open('.token', 'r+') as fp:
     if not fp.read():
         token = input('Token: ')
         fp.write(token)
