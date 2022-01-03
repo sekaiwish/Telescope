@@ -10,9 +10,9 @@ setup_files('.auth_keys')
 with open('.auth_keys', 'r+') as fp:
     auth_keys = {line.rstrip() for line in fp}
 
-channel_whitelist = {'Star Miners'}
-
-app = falcon.asgi.App()
+channel_whitelist = {'star miners', 'wishu'}
+_messages = set()
+_stars = set()
 
 class Message:
     def __init__(self, id, timestamp, sender, world, tier, location):
@@ -33,6 +33,11 @@ class Star:
         if len(self.location) < 3:
             self.location.append(location)
 
+async def purge():
+    for message in _messages.copy():
+        if message.timestamp + 60 < int(datetime.datetime.now().timestamp()):
+            _messages.discard(message)
+
 class Tests:
     async def on_get(self, req, res):
         res.content_type = falcon.MEDIA_JSON
@@ -52,10 +57,8 @@ class Tests:
             res.status = falcon.HTTP_401
 
 class Messages:
-    async def purge():
-        pass # purge messages/stars older than ?? minutes
     async def on_post(self, req, res):
-        # await purge()
+        await purge()
         res.content_type = falcon.MEDIA_JSON
         if req.get_header('Authorization'):
             auth_key = req.get_header('Authorization')
@@ -63,9 +66,11 @@ class Messages:
                 res.status = falcon.HTTP_200
                 content = json.loads(await req.stream.read())
                 for msg in content:
-                    if msg['chatType'] == 'FRIENDS' and msg['chatName'] in channel_whitelist:
-                        timestamp = int(datetime.datetime.strptime(msg['timestamp'][:19], '%Y-%m-%dT%H:%M:%S').timestamp())
-                        body = msg['message']
+                    if msg['chatType'] == 'FRIENDS' and msg['chatName'].lower() in channel_whitelist:
+                        if msg['id'] in {message.id for message in _messages}:
+                            continue
+
+                        body = msg['message'].lower()
 
                         # Thanks to PescalinPax/MordoJay/Mordecaii for RegEx help
                         world_pattern = re.compile('(?:world|w)?\s*(\d{3})')
@@ -77,10 +82,7 @@ class Messages:
                         location_match = location_pattern.search(body)
 
                         if world_match == None or tier_match == None or location_match == None:
-                            res.status = falcon.HTTP_400
-                            response = {'error': 'not valid scout data'}
-                            res.text = json.dumps(response)
-                            return
+                            continue
 
                         # Handle optional percentage tracking
                         if tier_match.group(2):
@@ -90,24 +92,17 @@ class Messages:
 
                         message_entry = Message(
                             msg['id'],
-                            timestamp,
+                            int(datetime.datetime.now().timestamp()),
                             msg['sender'],
-                            world_match.group(1),
-                            tier,
+                            world_match.group(1).strip(),
+                            tier.strip(),
                             location_match.group(0)
                         )
 
-                        """
-                        print(message_entry.world)
-                        print(message_entry.tier)
-                        print(message_entry.location)
-                        """
+                        _messages.add(message_entry)
 
                         # check new message against star presences
                         # within algorithm, create OR update star presences
-                    else:
-                        response = {'error': 'chat channel not in whitelist'}
-                        res.text = json.dumps(response)
             else:
                 res.status = falcon.HTTP_401
         else:
@@ -115,6 +110,7 @@ class Messages:
     async def on_get(self, req, res):
         pass # handle returning new messages after given timestamp
 
+app = falcon.asgi.App()
 tests = Tests()
 app.add_route('/', tests)
 messages = Messages()
