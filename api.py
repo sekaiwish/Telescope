@@ -15,8 +15,7 @@ _messages = set()
 _stars = set()
 
 class Message:
-    def __init__(self, id, timestamp, sender, world, tier, location):
-        self.id = id
+    def __init__(self, timestamp, sender, world, tier, location):
         self.timestamp = timestamp
         self.sender = sender
         self.world = world
@@ -67,9 +66,6 @@ class Messages:
                 content = json.loads(await req.stream.read())
                 for msg in content:
                     if msg['chatType'] == 'FRIENDS' and msg['chatName'].lower() in channel_whitelist:
-                        if msg['id'] in {message.id for message in _messages}:
-                            continue
-
                         body = msg['message'].lower()
 
                         # Thanks to PescalinPax/MordoJay/Mordecaii for RegEx help
@@ -81,8 +77,7 @@ class Messages:
                         location_pattern = re.compile('([a-z]{2}.*)')
                         location_match = location_pattern.search(body)
 
-                        if world_match == None or tier_match == None or location_match == None:
-                            continue
+                        if world_match == None or tier_match == None or location_match == None: continue
 
                         # Handle optional percentage tracking
                         if tier_match.group(2):
@@ -91,13 +86,21 @@ class Messages:
                             tier = tier_match.group(1)
 
                         message_entry = Message(
-                            msg['id'],
                             int(datetime.datetime.now().timestamp()),
                             msg['sender'],
                             world_match.group(1).strip(),
                             tier.strip(),
                             location_match.group(0)
                         )
+
+                        duplicate = False
+                        for message in _messages:
+                            if message_entry.sender == message.sender and \
+                            message_entry.world == message.world and \
+                            message_entry.tier == message.tier and \
+                            message_entry.location == message.location:
+                                duplicate = True
+                        if duplicate == True: continue
 
                         _messages.add(message_entry)
 
