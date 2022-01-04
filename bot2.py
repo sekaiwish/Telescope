@@ -48,7 +48,6 @@ async def get_stars():
                 data = {'content': f'`w{world}` `t{tier}` `{location}`'}
                 requests.post(webhook, json=data)
                 if new_timestamp > temp_timestamp: temp_timestamp = new_timestamp
-            else:
         if temp_timestamp > last_timestamp: last_timestamp = temp_timestamp
         await asyncio.sleep(10)
 
