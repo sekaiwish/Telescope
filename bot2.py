@@ -45,7 +45,7 @@ async def get_stars():
                 world = star['world']
                 tier = star['tier']
                 location = star['location']
-                data = {'content': f'`w{world}` `t{tier}` `{location}`'}
+                data = {'content': f'`w{world}` `t{tier}` `{location}`', 'username': star['sender']}
                 requests.post(webhook, json=data)
                 if new_timestamp > temp_timestamp: temp_timestamp = new_timestamp
         if temp_timestamp > last_timestamp: last_timestamp = temp_timestamp
