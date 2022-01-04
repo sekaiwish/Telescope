@@ -22,7 +22,7 @@ class Message:
         self.tier = tier
         self.location = location
     def get_properties(self):
-        return {'sender': self.sender, 'world': self.world, 'tier': self.tier, 'location': self.location}
+        return {'timestamp': self.timestamp, 'sender': self.sender, 'world': self.world, 'tier': self.tier, 'location': self.location}
 
 class Star:
     def __init__(self, finder, timestamp, region, location):
