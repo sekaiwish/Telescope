@@ -21,6 +21,8 @@ class Message:
         self.world = world
         self.tier = tier
         self.location = location
+    def get_properties(self):
+        return {'sender': self.sender, 'world': self.world, 'tier': self.tier, 'location': self.location}
 
 class Star:
     def __init__(self, finder, timestamp, region, location):
@@ -73,11 +75,14 @@ class Messages:
                         world_match = world_pattern.search(body)
                         tier_pattern = re.compile('(?:tier|t)?\s*(\d{1})\s*(\d{1,3}\%)?')
                         tier_match = tier_pattern.search(body)
+
+                        if world_match == None or tier_match == None: continue
+                        
                         body = body.replace(world_match.group(0).strip(), '').replace(tier_match.group(0).strip(), '')
                         location_pattern = re.compile('([a-z]{2}.*)')
                         location_match = location_pattern.search(body)
 
-                        if world_match == None or tier_match == None or location_match == None: continue
+                        if location_match == None: continue
 
                         # Handle optional percentage tracking
                         if tier_match.group(2):
@@ -111,7 +116,9 @@ class Messages:
         else:
             res.status = falcon.HTTP_401
     async def on_get(self, req, res):
-        pass # handle returning new messages after given timestamp
+        res.status = falcon.HTTP_200
+        response = [msg.get_properties() for msg in _messages]
+        res.text = json.dumps(response)
 
 app = falcon.asgi.App()
 tests = Tests()
